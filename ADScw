@@ -1,0 +1,192 @@
+/** G52ADS 2015-16 C/W ONE  ------ DRAFT DRAFT DRAFT DRAFT v.2 2015-10-20 -- MIGHT CHANGE A LITTLE!! ---------
+    Title:  Analysis of Algorithms
+	Author: Andrew Parkes
+	
+	Parts of Main should be modified as you think necessary. 
+	Submit the version of this code that you use for the main graph.
+*/
+import java.util.Random;
+
+public class Main {
+	
+	/// used for counting primitive operations
+	static int c;
+	static Random rnd;
+
+	/* Main method:  runs the experiments and prints results.
+	
+		You can (and should) change this as needed.
+		
+		E.g. You should change the maxN and maxRuns to values of your choice.
+		You may well also want to do more than just report the n,c from each run.
+		e.g. to collect and print more 'statistics' such as worst, best, average at each value of n.
+	*/
+	public static void main(String[] a){
+		
+		int maxN = 30;   // CHANGE AS NEEDED
+		int numRuns = 5;  // CHANGE AS NEEDED
+		
+		rnd = new Random();
+		/*array size changes from 1 to 10
+		 * for each n, 
+		 * generate a array of size n with random numbers in it
+		 * 5 times
+		 * each time find the best and worst case and calculate the average case
+		 * */
+		for (int n = 1 ; n <= maxN ; n+=1 ) {
+			int[] A = new int[n];
+			double worst_case=0.0,best_case=Integer.MAX_VALUE,sum=0.0;
+			for (int run = 0 ; run < numRuns ; run++ ) {
+				randInit(A);
+				c=0;
+				//printArray(A);
+				int out = p(A);
+				newp(A);
+				// KEEP EXTRA STATISTICS AS NEEDED
+				if (c>worst_case) worst_case=c;
+				if (c<best_case) best_case=c;
+				sum+=c;
+			}
+			//System.out.println(n+" "+worst_case+" "+best_case+" "+sum/numRuns);
+			//System.out.println(sum/numRuns);
+			// PROCESS/PRINT EXTRA STATISTICS AS NEEDED
+		}
+		// PROCESS/PRINT EXTRA STATISTICS AS NEEDED
+	}
+	
+	/* 	This is the function 'p' that needs to be analysed.
+		It works on an integer array, 'A' with n elements.
+		You can think of it as a piece of 'legacy code' you are given and it is suspected to 
+		be causing trouble, such as making the application program to be going slow. 
+		You need to analyse its scaling behaviour and make other comments.
+		The "c += " fragments have been added to help, but are not part of the code itself.
+
+		NOTE: Do _NOT_ take this as an example of how to write good code!
+		Parts of it may be deliberately poor to illustrate useful points.
+
+		DO NOT CHANGE THIS FUNCTION EXCEPT THE increments to the counter on the r.h.s. !!!
+	*/
+	/*
+	 * understanding: 
+	 * p : input an array A,
+	 * if the array size is even
+	 * then return log (sum A)
+	 * if the array size is odd 
+	 * return log (the largest element)
+	 * 
+	 * ?? why difference between best and worst case
+	 * because some random number are different 
+	 * 
+	 * */
+	static int newp(int[] A){
+		c = 0;
+		int max = Integer.MIN_VALUE;
+		int sum=0;
+		int s;
+		int m=0;
+		for (int i =0; i< A.length; i++){
+			sum += A[i];
+			if (max < A[i]){
+				max = A[i];
+			}
+		}
+		s = (A.length%2==0 ? sum : max);
+		while( s >=2){
+			s /= 2;
+			m++;
+		}
+		System.out.println("max = "+m);
+		return m;
+	}
+	
+	static int p(int[] A) {
+		// n = 1 : 10
+		c = 0;
+		int n = A.length;                   	c += 1;
+	    int[] B = new int[n];               	c += 1; //?
+	
+		int sum = 0;                        	c += 1;
+		int max = 0;                      		c += 1;
+		/* while (p<n){							c +=1		
+		 * p++ 									c +=1
+		 *
+		 * }*/ 
+		
+	    for (int p=0; p < n; p++) {     		c += 1; // n times iteration , n = 1: 10
+			int k = A[p];                   	c += 2; 
+			sum += k;                     		c += 2; 
+			B[p] = sum;                       	c += 2; // b[p] is the sum of the fst p elements
+			int m = 0;                      	c += 1; 
+			int s;                         		c += 1;
+			/* if ( n%2 == 0 ){   				
+			 * s = sum
+			 * else 
+			 * s = k               				the worst case : n % 2 -> ==0 -> s = k
+			 * }
+			 * 
+			 * */
+			s = ( n%2 == 0 ? sum : k );         c += 3; // s = sum if n is even else k
+			while ( s >= 2 ) {            		c += 2; // s = 2 : 10 
+				s /= 2;                     	c += 1; 
+				m++;                        	c += 1; // the loop will iteration s/2 times
+			}
+			
+			if ( m > max ) {					c += 2; 
+				max = m;               			c += 1;
+			}
+												c += 0; // for 'anything else'
+												
+			//System.out.println("max = "+max);
+		}
+												c += 0; // for 'anything else'
+		A = B;                              	c += 1;
+		System.out.println("max' = "+max);
+												c += 1; // for the 'return'
+		return max; 						
+	}
+
+	
+	/* Used to initialise the array A.
+	   You are expected to report results using version exactly as below.
+	   DO NOT CHANGE THIS FUNCTION!!!
+	   (Unless you know what you are doing, e.g. for some "side experiments" 
+	    used to help you understand.)
+	*/
+	/*  n =3x  A[i] = 3n + a number between 0 and n
+	 *  else  A[i] = 10+ a number smaller than (the min of n and 100)
+	 * */
+	static void randInit(int[] A) {
+			int n = A.length;
+			if (n%3 == 0) {
+				for (int i = 0 ; i < n ; i++ ) {
+					A[i] = 10*n + rnd.nextInt( n );
+				}
+			}
+			else {
+				for (int i = 0 ; i < n ; i++ ) {
+					A[i] = 10 + rnd.nextInt(  Math.min( n, 100)   );
+				}
+			}
+		}
+	static void printArray(int[] A){
+		System.out.print(A.length + ": ");
+		for (int i =0; i< A.length; i++){
+			System.out.print(A[i]+"\t");
+		}
+		System.out.println();
+	}
+	/*
+	 *  initArray :  1	 2	3	4	5	6	7	8	9	10  (3, 6, 9) (1, 2, 4, 5, 7, 8)
+	 *  calculS   :  1	2	3	4	5	6	7	8	9	10  (2, 4, 6, 8, 10) (1, 3, 5, 7, 9)	
+	 *  
+	 *  6 n is a peak, because they are both 2 k and 3 K
+	 *  6n + - 1 is not 2 K either 3 K , the random number is smaller and s = the largest number not the sum
+	 *  
+	 *6n-5  6n-4  	6n-3 		6n-2 	6n-1  	6n  	
+	 *odd  	even	odd, 3K 	even	odd		peak
+	 *
+	 *O(n*logN)
+	 *can make it N	
+	 * */
+}
+
