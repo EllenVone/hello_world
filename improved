@@ -1,0 +1,113 @@
+
+import java.util.Random;
+public class New {
+
+	/** G52ADS 2015-16 C/W ONE  ------ DRAFT DRAFT DRAFT DRAFT 2015-10-20 -- MIGHT CHANGE A LITTLE!! ---------
+
+    Title:  Analysis of Algorithms
+	Author: Andrew Parkes
+	
+	Parts of Main should be modified as you think necessary. 
+	Submit the version of this code that you use for the main graph.
+*/
+	
+	/// used for counting primitive operations
+	static int c;
+	static Random rnd;
+
+	/* Main method:  runs the experiments and prints results.
+	
+		You can (and should) change this as needed.
+		
+		E.g. You should change the maxN and maxRuns to values of your choice.
+		You may well also want to do more than just report the n,c from each run.
+		e.g. to collect and print more 'statistics' such as worst, best, average at each value of n.
+	*/
+	public static void main(String[] a){
+		
+		int maxN = 30;   // CHANGE AS NEEDED
+		int numRuns = 5;  // CHANGE AS NEEDED
+		
+		rnd = new Random();
+
+		for (int n = 1 ; n <= maxN ; n+=1 ) {
+			int[] A = new int[n];
+			double worst_case=0.0,best_case=Integer.MAX_VALUE,sum=0.0;
+			for (int run = 0 ; run < numRuns ; run++ ) {
+				// initialise A with randomised values
+				randInit(A);
+				// reset the counter, c, run f, and report the count
+				c=0;
+				int out = p(A);
+				//System.out.println(n + " " + c);
+				// KEEP EXTRA STATISTICS AS NEEDED
+				if (c>worst_case) worst_case=c;
+				if (c<best_case) best_case=c;
+				sum+=c;
+				
+			}
+			System.out.println(n+" "+worst_case+" "+best_case+" "+sum/numRuns);
+		}
+		// PROCESS/PRINT EXTRA STATISTICS AS NEEDED
+	}
+	
+	/* 	This is the function 'p' that needs to be analysed.
+		It works on an integer array, 'A' with n elements.
+		You can think of it as a piece of 'legacy code' you are given and it is suspected to 
+		be causing trouble, such as making the application program to be going slow. 
+		You need to analyse its scaling behaviour and make other comments.
+		The "c += " fragments have been added to help, but are not part of the code itself.
+
+		NOTE: Do _NOT_ take this as an example of how to write good code!
+		Parts of it may be deliberately poor to illustrate useful points.
+
+		DO NOT CHANGE THIS FUNCTION EXCEPT THE increments to the counter on the r.h.s. !!!
+	*/
+	/*O (n)
+	 * */
+	static int p(int[] A) {
+		c = 0;
+		int max = Integer.MIN_VALUE;		c++;
+		int sum=0;					c++;
+		int s;		c++;
+		int m=0;	c++;
+		for (int i =0; i< A.length; i++){	c++;
+			sum += A[i];					c++;
+			if (max < A[i]){				c++;
+				max = A[i];					c++;
+			}
+		}
+		s = (A.length%2==0 ? sum : max);	c++;
+		while( s >=2){						c++;
+			s /= 2;							c++;
+			m++;							c++;
+		}
+		//System.out.println("max = "+m);		c++;
+		return m;							
+	}
+	
+	/* Used to initialise the array A.
+	   You are expected to report results using version exactly as below.
+	   DO NOT CHANGE THIS FUNCTION!!!
+	   (Unless you know what you are doing, e.g. for some "side experiments" 
+	    used to help you understand.)
+	*/
+	static void randInit(int[] A) {
+			int n = A.length;
+			
+			if (n%3 == 0) {
+				for (int i = 0 ; i < n ; i++ ) {
+					A[i] = 10*n + rnd.nextInt( n );
+				}
+			}
+			else {
+				for (int i = 0 ; i < n ; i++ ) {
+					A[i] = 10 + rnd.nextInt(  Math.min( n, 100)   );
+				}
+			}
+		}
+		
+}
+
+
+
